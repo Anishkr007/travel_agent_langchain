@@ -1,11 +1,13 @@
 import httpx
 from app.config import settings
 from typing import Dict, Any
+from langsmith import traceable
 
 class OpenWeatherClient:
     BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
     
     @staticmethod
+    @traceable(name="weather-tool", run_type="tool")
     async def get_weather(location: str) -> Dict[str, Any]:
         if not settings.OPENWEATHER_API_KEY:
             return {"error": "OPENWEATHER_API_KEY is missing. Please configure it in .env."}

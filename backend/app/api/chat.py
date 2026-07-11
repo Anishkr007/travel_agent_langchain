@@ -40,7 +40,13 @@ async def chat_endpoint(
 
             # 2. Setup Graph and Stream
             async with get_compiled_graph() as graph:
-                config = {"configurable": {"thread_id": thread_id}}
+                # Use "production" tag if not running locally, but here we just use "dev" as default for this example unless env var IS_PROD is used.
+                is_prod = False # Hardcoded for local environment since we don't have an env var for it yet
+                config = {
+                    "configurable": {"thread_id": thread_id},
+                    "tags": ["production" if is_prod else "dev", "chat"],
+                    "metadata": {"user_id": user_id, "thread_id": thread_id}
+                }
                 
                 # The initial state payload
                 input_state = {
@@ -61,7 +67,7 @@ async def chat_endpoint(
                             }
                     elif event["event"] == "on_tool_end":
                         tool_name = event["name"]
-                        if tool_name in ["get_weather", "search_travel_info"]:
+                        if tool_name in ["get_weather", "search_travel_info", "search_flights"]:
                             output = event["data"]["output"]
                             yield {
                                 "event": "message",

@@ -1,16 +1,217 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wander AI</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Wander AI — Plan Your Perfect Trip</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Ambient background (fixed, behind everything) -->
+  <div class="page-bg">
+    <div class="glow glow-blue"></div>
+    <div class="glow glow-violet"></div>
+    <div class="glow glow-teal"></div>
+  </div>
+
+  <!-- ===================== AUTH VIEWS ===================== -->
+  <div id="view-login" class="auth-view hidden">
+    <div class="auth-card">
+      <div class="auth-head">
+        <span class="brand-mark">✈</span>
+        <h1>Sign in</h1>
+        <p>Welcome back to Wander AI</p>
+      </div>
+      <div id="login-error" class="form-error hidden"></div>
+      <form id="login-form">
+        <label>
+          <span>Email</span>
+          <input type="email" id="login-email" required autocomplete="email" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="login-password" required autocomplete="current-password" />
+        </label>
+        <button type="submit" class="btn-gradient full">Continue</button>
+      </form>
+      <p class="auth-switch">Don't have an account? <a href="#/register">Sign up</a></p>
+    </div>
+  </div>
+
+  <div id="view-register" class="auth-view hidden">
+    <div class="auth-card">
+      <div class="auth-head">
+        <span class="brand-mark">✈</span>
+        <h1>Create account</h1>
+        <p>Join Wander AI</p>
+      </div>
+      <div id="register-error" class="form-error hidden"></div>
+      <form id="register-form">
+        <label>
+          <span>Full name</span>
+          <input type="text" id="register-name" required autocomplete="name" />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" id="register-email" required autocomplete="email" />
+        </label>
+        <label>
+          <span>Password</span>
+          <input type="password" id="register-password" required autocomplete="new-password" />
+        </label>
+        <button type="submit" class="btn-gradient full">Sign up</button>
+      </form>
+      <p class="auth-switch">Already have an account? <a href="#/login">Sign in</a></p>
+    </div>
+  </div>
+
+  <!-- ===================== APP SHELL ===================== -->
+  <div id="view-app" class="app-shell hidden">
+
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark">✈</span>
+        <span>Wander AI</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#/chat" data-nav="chat" class="nav-item">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Chat
+        </a>
+        <a href="#/profile" data-nav="profile" class="nav-item">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+          Profile
+        </a>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="avatar" id="user-avatar">--</div>
+        <div class="user-meta">
+          <p id="user-name">Traveler</p>
+        </div>
+        <button id="logout-btn" title="Sign out" class="icon-btn">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <header class="mobile-header">
+      <span class="brand-mark">✈</span> Wander AI
+      <div class="mobile-nav">
+        <a href="#/chat">Chat</a>
+        <a href="#/profile">Profile</a>
+      </div>
+    </header>
+
+    <!-- ---------- CHAT PAGE ---------- -->
+    <main id="page-chat" class="page hidden">
+
+      <div id="chat-scroll" class="chat-scroll">
+
+        <!-- Hero / empty state -->
+        <section id="hero" class="hero">
+          <span class="badge">✈️ Wander AI — A Multi-Agent Travel Planner with LangGraph</span>
+          <h1>Plan Your <span class="grad-text">Perfect Trip</span> <span class="grad-text">with AI</span></h1>
+          <p class="hero-sub">Search flights, discover hotels, and generate a complete travel itinerary using a multi-agent LangGraph system.</p>
+
+          <div class="planner-card">
+            <div class="planner-head">
+              <div>
+                <h2>Where do you want to go?</h2>
+                <p>Example: Plan a complete 7 day Nepal trip from Delhi under ₹80,000.</p>
+              </div>
+              <span class="status-pill"><span class="status-dot"></span>Online</span>
+            </div>
+
+            <div class="input-row">
+              <textarea id="hero-input" rows="4" placeholder="Plan a complete 7 day Nepal trip including flights, hotels and sightseeing..."></textarea>
+              <button id="hero-send" class="btn-gradient">
+                <span class="btn-label">Generate Plan</span>
+                <span class="btn-loader hidden"></span>
+              </button>
+            </div>
+
+            <div class="quick-prompts">
+              <button data-prompt="Plan a complete 7 day Nepal trip from Delhi under ₹80,000, including flights, hotels and sightseeing.">Nepal Trip</button>
+              <button data-prompt="Plan a complete 7 day Japan trip including flights, hotels and sightseeing under 2 lakhs.">Japan Trip</button>
+              <button data-prompt="Plan a 5 day Thailand trip from Mumbai with beach and city stops.">Thailand Trip</button>
+              <button data-prompt="Find flight options from Delhi to Kathmandu next week.">Global Flights</button>
+            </div>
+          </div>
+
+          <p class="footer-tag">Built with FastAPI, LangGraph, OpenAI, MongoDB, Tavily and AviationStack.</p>
+        </section>
+
+        <!-- Message thread -->
+        <section id="messages" class="messages hidden"></section>
+
+      </div>
+
+      <!-- Bottom composer (shown once a conversation has started) -->
+      <div id="composer" class="composer hidden">
+        <input id="chat-input" type="text" placeholder="Ask about a destination…" autocomplete="off" />
+        <button id="chat-send" class="send-btn">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+        </button>
+      </div>
+    </main>
+
+    <!-- ---------- PROFILE PAGE ---------- -->
+    <main id="page-profile" class="page hidden">
+      <div class="profile-wrap">
+        <h1 class="profile-title">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+          Traveler Profile
+        </h1>
+
+        <div id="profile-loading" class="muted-line">Loading profile…</div>
+
+        <div id="profile-content" class="hidden">
+          <div class="panel">
+            <div class="panel-head">Preferences</div>
+            <div id="profile-fields" class="panel-body"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">Favorite Destinations</div>
+            <div id="profile-destinations" class="panel-body chips-body"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Templates -->
+  <template id="tpl-msg-user">
+    <div class="msg msg-user"><div class="msg-content"></div></div>
+  </template>
+
+  <template id="tpl-msg-assistant">
+    <div class="msg msg-assistant">
+      <div class="msg-label">WANDER</div>
+      <div class="msg-content"></div>
+      <div class="msg-tools"></div>
+      <div class="msg-actions hidden">
+        <button class="action-btn copy-btn">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          Copy
+        </button>
+        <button class="action-btn pdf-btn">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Third-party (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
 </html>

@@ -31,10 +31,20 @@ async def create_indexes(db: AsyncIOMotorDatabase):
 
 async def connect_to_mongo():
     logger.info("Connecting to MongoDB...")
-    mongodb.client = AsyncIOMotorClient(settings.MONGODB_URL)
-    mongodb.db = mongodb.client[settings.DATABASE_NAME]
-    await create_indexes(mongodb.db)
-    logger.info("Connected to MongoDB!")
+    try:
+        # 10s server selection timeout so we don't hang forever
+        mongodb.client = AsyncIOMotorClient(settings.MONGODB_URL, serverSelectionTimeoutMS=10000)
+        # Force a connection attempt to fail fast if unreachable
+        await mongodb.client.admin.command('ping')
+        mongodb.db = mongodb.client[settings.DATABASE_NAME]
+        await create_indexes(mongodb.db)
+        logger.info("Connected to MongoDB!")
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        # Allow the app to start so health checks pass, but log loudly
+        # Or raise if we want the container to crash (Render will restart it)
+        # The prompt says: "produces a clear startup error in logs instead of hanging silently"
+        raise RuntimeError(f"Could not connect to MongoDB: {e}")
 
 async def close_mongo_connection():
     if mongodb.client:

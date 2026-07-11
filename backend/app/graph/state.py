@@ -11,6 +11,7 @@ class TravelState(TypedDict):
     trip_duration_days: Optional[int]
     travel_dates: Optional[str]
     weather_data: Optional[Dict[str, Any]]
+    flight_data: Optional[Dict[str, Any]]
     search_results: Optional[Dict[str, Any]]
     budget_estimate: Optional[Dict[str, Any]]
     user_profile: Dict[str, Any]

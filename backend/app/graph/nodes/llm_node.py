@@ -3,6 +3,7 @@ from langchain_core.messages import AIMessage
 from app.graph.state import TravelState
 from app.tools.weather_tool import get_weather
 from app.tools.search_tool import search_travel_info
+from app.tools.flight_tool import search_flights
 import json
 from app.config import settings
 
@@ -15,7 +16,7 @@ def get_llm():
         api_key=settings.OPENAI_API_KEY or "missing_key"
     )
 
-tools = [get_weather, search_travel_info]
+tools = [get_weather, search_travel_info, search_flights]
 
 async def llm_node(state: TravelState):
     if not settings.OPENAI_API_KEY or settings.OPENAI_API_KEY == "your_openai_api_key_here":
@@ -32,6 +33,7 @@ User Profile: {json.dumps(state['user_profile'])}
 When citing facts, always provide the source URL. 
 Pair weather callouts with practical advice.
 If destination, dates, or budget are missing for an itinerary request, ask clarifying questions.
+When the user mentions flights, an origin, or a destination as part of a trip request, call search_flights with their original natural-language phrasing (not IATA codes). Clearly state that flight data is live/schedule info, not fare pricing.
 Use Markdown formatting: headers, tables, bullet lists where appropriate."""
 
     from langchain_core.messages import SystemMessage, trim_messages

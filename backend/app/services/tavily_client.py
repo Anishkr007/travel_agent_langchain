@@ -1,11 +1,13 @@
 import httpx
 from app.config import settings
 from typing import Dict, Any
+from langsmith import traceable
 
 class TavilyClient:
     BASE_URL = "https://api.tavily.com/search"
     
     @staticmethod
+    @traceable(name="search-tool", run_type="tool")
     async def search(query: str, search_depth: str = "basic") -> Dict[str, Any]:
         if not settings.TAVILY_API_KEY:
             return {"error": "TAVILY_API_KEY is missing. Please configure it in .env."}

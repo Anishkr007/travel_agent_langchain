@@ -4,8 +4,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import auth, chat, profile
 from app.database.mongodb import connect_to_mongo, close_mongo_connection
 
+from app.config import settings
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if settings.LANGSMITH_API_KEY:
+        print(f"LangSmith tracing: enabled (project={settings.LANGSMITH_PROJECT})")
+    else:
+        print("LangSmith tracing: disabled (LANGSMITH_API_KEY not set)")
+        
     await connect_to_mongo()
     yield
     await close_mongo_connection()
@@ -14,7 +21,7 @@ app = FastAPI(title="AI Travel Planner API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",")],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

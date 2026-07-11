@@ -5,13 +5,17 @@ from app.config import settings
 
 from pymongo import MongoClient
 
-# Initialize synchronous client globally to reuse connection pool
-_mongo_client = MongoClient(settings.MONGODB_URL)
-_checkpointer = MongoDBSaver(_mongo_client)
+_mongo_client = None
+_checkpointer = None
 
 @contextlib.asynccontextmanager
 async def get_compiled_graph():
-    # Reuse the global checkpointer
+    global _mongo_client, _checkpointer
+    if _mongo_client is None:
+        # Use serverSelectionTimeoutMS to fail fast if unreachable at cold start
+        _mongo_client = MongoClient(settings.MONGODB_URL, serverSelectionTimeoutMS=10000)
+        _checkpointer = MongoDBSaver(_mongo_client)
+    
     yield build_graph().compile(checkpointer=_checkpointer)
 from app.graph.state import TravelState
 from app.graph.nodes.llm_node import llm_node
