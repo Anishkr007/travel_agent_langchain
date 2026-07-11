@@ -1,6 +1,7 @@
 import json
 import asyncio
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 from langchain_core.messages import HumanMessage
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -84,3 +85,84 @@ async def chat_endpoint(
             }
             
     return EventSourceResponse(event_generator())
+
+@router.post("/travel")
+async def travel_endpoint(
+    request: ChatRequest, 
+    req: Request, 
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    user_id = request.user_id if getattr(request, 'user_id', None) else "guest"
+    thread_id = request.thread_id if getattr(request, 'thread_id', None) else "guest"
+    message = request.message
+    
+    try:
+        profile = await get_user_preferences(db, user_id) or {}
+        profile_dict = {
+            "name": "Guest",
+            "favorite_destinations": profile.get("favorite_destinations", []),
+            "budget_preference": profile.get("budget_preference"),
+            "food_preference": profile.get("food_preference"),
+            "traveler_type": profile.get("traveler_type"),
+            "seat_preference": profile.get("seat_preference")
+        }
+
+        async with get_compiled_graph() as graph:
+            is_prod = False
+            config = {
+                "configurable": {"thread_id": thread_id},
+                "tags": ["production" if is_prod else "dev", "chat"],
+                "metadata": {"user_id": user_id, "thread_id": thread_id}
+            }
+            
+            input_state = {
+                "messages": [HumanMessage(content=message)],
+                "user_id": user_id,
+                "thread_id": thread_id,
+                "user_profile": profile_dict
+            }
+            
+            result = await graph.ainvoke(input_state, config)
+            final_message = result["messages"][-1].content
+            
+            flights_data = []
+            for msg in reversed(result["messages"]):
+                if getattr(msg, "name", None) == "search_flights":
+                    try:
+                        tool_data = json.loads(msg.content)
+                        raw_flights = tool_data.get("flights", [])
+                        
+                        def format_time(ts):
+                            if not ts: return "--"
+                            from datetime import datetime
+                            try:
+                                dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                                return dt.strftime("%b %d, %I:%M %p")
+                            except:
+                                return ts
+
+                        for f in raw_flights:
+                            dep = f.get("departure", {})
+                            arr = f.get("arrival", {})
+                            flights_data.append({
+                                "airline": f.get("airline", "Unknown"),
+                                "flightNumber": f.get("flight_number", ""),
+                                "status": f.get("status", "scheduled"),
+                                "from": dep.get("iata", "--"),
+                                "to": arr.get("iata", "--"),
+                                "departTime": format_time(dep.get("scheduled")),
+                                "arriveTime": format_time(arr.get("scheduled"))
+                            })
+                        break
+                    except Exception:
+                        pass
+                        
+            return JSONResponse({
+                "success": True,
+                "answer": final_message,
+                "thread_id": thread_id,
+                "flights": flights_data
+            })
+            
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
