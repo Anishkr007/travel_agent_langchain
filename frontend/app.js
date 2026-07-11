@@ -3,7 +3,7 @@
 // Talks to the existing FastAPI backend (unchanged): /api/auth, /api/chat, /api/profile
 // ===================================================================
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "https://travel-agent-langchain.onrender.com/api";
 
 // ---------- Token storage ----------
 const getTokens = () => ({
