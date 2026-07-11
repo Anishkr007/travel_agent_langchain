@@ -21,7 +21,11 @@ app = FastAPI(title="AI Travel Planner API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin.strip() for origin in settings.ALLOWED_ORIGINS.split(",")],
+    allow_origins=[
+        "https://travel-agent-langchain.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
