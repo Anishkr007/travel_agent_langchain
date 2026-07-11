@@ -118,43 +118,45 @@
     }
 
   /* Flight Cards */
-  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: var(--accent-1); }
+  #flightList { margin-bottom: 24px; }
+  #flightList:empty { display: none; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
   .info-note {
     display: flex; gap: 9px; align-items: flex-start;
-    background: rgba(240, 168, 64, 0.1); border: 1px solid rgba(240, 168, 64, 0.28); color: #f0c98a;
-    padding: 11px 14px; border-radius: 12px; font-size: 12.5px; line-height: 1.5; margin-bottom: 18px;
+    background: rgba(240, 168, 64, 0.08); border: 1px solid rgba(240, 168, 64, 0.2); color: rgba(240, 201, 138, 0.85);
+    padding: 10px 14px; border-radius: 10px; font-size: 12px; line-height: 1.55; margin-bottom: 14px;
   }
-  .info-note svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+  .info-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
   .flight-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-    padding: 18px 20px; margin-bottom: 12px; transition: border-color .15s, transform .15s;
+    background: #1a1a2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+    padding: 16px 20px; margin-bottom: 10px; transition: border-color .2s, box-shadow .2s;
   }
-  .flight-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .flight-card:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
   .flight-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .airline-info { display: flex; align-items: baseline; gap: 8px; }
-  .airline-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 14.5px; }
-  .flight-num { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-faint); }
+  .airline-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: #e8e8f0; }
+  .flight-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(180,180,200,0.55); }
   .status-badge {
-    font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
-    padding: 4px 9px; border-radius: 100px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 100px; border: 1px solid;
   }
-  .status-scheduled { background: rgba(52, 211, 153, 0.14); color: #34d399; }
-  .status-delayed { background: rgba(240, 168, 64, 0.14); color: var(--accent-2); }
-  .status-cancelled { background: rgba(239, 68, 68, 0.14); color: #f87171; }
-  .status-landed { background: rgba(148, 163, 184, 0.14); color: #94a3b8; }
-  .route-row { display: flex; align-items: center; gap: 14px; }
-  .route-point { flex: 0 0 auto; }
-  .route-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 17px; }
-  .route-time { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
-  .route-line {
-    flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), var(--accent-1) 45%, var(--accent-2) 55%, var(--border-strong));
-    position: relative; margin: 0 4px;
-  }
-  .route-line::after {
-    content: "→"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: var(--surface); color: var(--accent-2); font-size: 13px; padding: 0 6px;
-  }
+  .status-scheduled { background: rgba(52, 211, 153, 0.1); color: #34d399; border-color: rgba(52,211,153,0.3); }
+  .status-delayed    { background: rgba(251,191, 36, 0.1); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
+  .status-cancelled  { background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239,68,68,0.3); }
+  .status-landed     { background: rgba(148,163,184, 0.1); color: #94a3b8; border-color: rgba(148,163,184,0.3); }
+  .route-row { display: flex; align-items: flex-start; gap: 0; }
+  .route-point { flex: 0 0 auto; min-width: 56px; }
   .route-point.dest { text-align: right; }
+  .route-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 22px; color: #e8e8f0; line-height: 1; }
+  .route-time { font-size: 11px; color: rgba(180,180,200,0.6); margin-top: 5px; }
+  .route-mid {
+    flex: 1; display: flex; flex-direction: column; align-items: center; padding: 0 12px; padding-top: 2px;
+  }
+  .route-plane { font-size: 16px; margin-bottom: 4px; }
+  .route-dashes {
+    width: 100%; height: 1px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0, rgba(255,255,255,0.15) 6px, transparent 6px, transparent 12px);
+  }
   </style>
 </head>
 <body>
@@ -294,32 +296,25 @@
       try{
         const flightList = document.getElementById('flightList');
         if (flightList) flightList.innerHTML = '';
+
         const url = 'https://travel-agent-langchain.onrender.com/api/chat/chat';
-        const body = JSON.stringify({ 
-          thread_id: threadId,
-          user_id: "guest",
-          message: userPrompt 
-        });
+        const body = JSON.stringify({ thread_id: threadId, user_id: "guest", message: userPrompt });
 
-        console.log("=== API REQUEST ===", url, body);
-
+        console.log("=== API REQUEST ===", url);
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
           body
         });
-        
-        console.log("Response Status:", response.status, response.statusText);
 
         if (!response.ok) {
-           let errorMsg = `Backend Error: ${response.status} ${response.statusText}`;
-           try {
-             const errorData = await response.json();
-             console.error("Backend Error JSON:", errorData);
-             if (errorData.detail) errorMsg = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
-             else if (errorData.error) errorMsg = errorData.error;
-           } catch(e) { console.error("Could not parse error response JSON", e); }
-           throw new Error(errorMsg);
+          let errorMsg = `Backend Error: ${response.status} ${response.statusText}`;
+          try {
+            const errorData = await response.json();
+            if (errorData.detail) errorMsg = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
+            else if (errorData.error) errorMsg = errorData.error;
+          } catch(e) {}
+          throw new Error(errorMsg);
         }
 
         const reader = response.body.getReader();
@@ -328,67 +323,76 @@
         let buffer = "";
         let pendingFlights = [];
 
+        const FLIGHT_TOOLS = new Set(['search_flights', 'flight-tool', 'flights', 'search_flight']);
+
+        const fmtTime = ts => {
+          if (!ts) return '--';
+          try { return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); }
+          catch(e) { return ts; }
+        };
+
+        const mapFlight = f => {
+          const dep = f.departure || {};
+          const arr = f.arrival || {};
+          return {
+            airline: f.airline || 'Unknown',
+            flightNumber: f.flight_number || f.flight?.iata || '',
+            status: f.status || f.flight_status || 'scheduled',
+            from: dep.iata || '--',
+            to: arr.iata || '--',
+            departTime: fmtTime(dep.scheduled),
+            arriveTime: fmtTime(arr.scheduled)
+          };
+        };
+
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, {stream: true});
-          
-          // Process complete SSE lines
+
           const lines = buffer.split('\n');
-          buffer = lines.pop(); // keep incomplete last line
+          buffer = lines.pop();
 
           for (const line of lines) {
             if (!line.startsWith('data: ')) continue;
             const raw = line.substring(6).trim();
             if (!raw) continue;
             try {
-              const data = JSON.parse(raw);
-              console.log("SSE event:", data);
-              if (data.type === 'token' && data.content) {
-                fullAnswer += data.content;
-              } else if (data.type === 'tool_data' && data.tool === 'search_flights') {
-                // data.data = { route, flights: [{airline, flight_number, status, departure:{iata,scheduled}, arrival:{iata,scheduled}}] }
-                const toolData = data.data || {};
-                const rawFlights = toolData.flights || [];
-                const mapped = rawFlights.map(f => {
-                  const dep = f.departure || {};
-                  const arr = f.arrival || {};
-                  const fmtTime = ts => {
-                    if (!ts) return '--';
-                    try { return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); }
-                    catch(e) { return ts; }
-                  };
-                  return {
-                    airline: f.airline || 'Unknown',
-                    flightNumber: f.flight_number || '',
-                    status: f.status || 'scheduled',
-                    from: dep.iata || '--',
-                    to: arr.iata || '--',
-                    departTime: fmtTime(dep.scheduled),
-                    arriveTime: fmtTime(arr.scheduled)
-                  };
-                });
-                pendingFlights = pendingFlights.concat(mapped);
-              } else if (data.type === 'error') {
-                console.error("Stream Error from Backend:", data.error);
-                throw new Error(data.error);
+              const evt = JSON.parse(raw);
+              console.log("SSE:", evt.type, evt);
+
+              if (evt.type === 'token' && evt.content) {
+                fullAnswer += evt.content;
+              } else if (evt.type === 'tool_data') {
+                console.log("Tool data received:", evt.tool, evt.data);
+                if (FLIGHT_TOOLS.has(evt.tool)) {
+                  const rawFlights = (evt.data || {}).flights || [];
+                  pendingFlights = pendingFlights.concat(rawFlights.map(mapFlight));
+                  console.log("Mapped flights:", pendingFlights);
+                }
+              } else if (evt.type === 'error') {
+                throw new Error(evt.error);
               }
-            } catch(e) {
-              // ignore parse errors on partial chunks
-            }
+            } catch(e) { /* ignore parse errors */ }
           }
         }
 
-        if (pendingFlights.length > 0) renderFlights(pendingFlights);
+        if (pendingFlights.length > 0) {
+          console.log("Rendering", pendingFlights.length, "flight cards");
+          renderFlights(pendingFlights);
+        } else {
+          console.warn("No flight data captured from SSE stream.");
+        }
         showResult(fullAnswer, threadId);
 
       } catch(err){
-        console.error("Network Error / Catch Block:", err);
+        console.error("Error:", err);
         showError(err.message || 'Network Error - The backend could not be reached.');
       } finally {
         setLoading(false);
       }
     }
+
 
     function copyResult(){
       const text = document.getElementById('resultBox').innerText;
@@ -459,14 +463,17 @@
             <span class="airline-name">${escapeHtml(f.airline)}</span>
             <span class="flight-num">${escapeHtml(f.flightNumber)}</span>
           </div>
-          <span class="status-badge ${statusClass[f.status] || 'status-scheduled'}">${escapeHtml(f.status)}</span>
+          <span class="status-badge ${statusClass[f.status?.toLowerCase()] || 'status-scheduled'}">${escapeHtml(f.status || 'scheduled')}</span>
         </div>
         <div class="route-row">
           <div class="route-point origin">
             <div class="route-code">${escapeHtml(f.from)}</div>
             <div class="route-time">${escapeHtml(f.departTime)}</div>
           </div>
-          <div class="route-line"></div>
+          <div class="route-mid">
+            <div class="route-plane">✈</div>
+            <div class="route-dashes"></div>
+          </div>
           <div class="route-point dest">
             <div class="route-code">${escapeHtml(f.to)}</div>
             <div class="route-time">${escapeHtml(f.arriveTime)}</div>
