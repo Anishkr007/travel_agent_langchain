@@ -187,6 +187,10 @@ async function submitMessage(rawText) {
   const assistantNode = addAssistantMessage();
   const contentEl = assistantNode.querySelector(".msg-content");
   const toolsEl = assistantNode.querySelector(".msg-tools");
+  
+  // Start dynamic loading text
+  startLoadingAnimation(contentEl);
+
   let accumulated = "";
   let firstToken = true;
 
@@ -226,11 +230,12 @@ async function submitMessage(rawText) {
 
         if (data.type === "token") {
           if (firstToken) {
+            stopLoadingAnimation();
             contentEl.innerHTML = "";
             firstToken = false;
           }
           accumulated += data.content || "";
-          contentEl.textContent = accumulated; // plain text while streaming
+          contentEl.innerHTML = escapeHtml(accumulated).replace(/\n/g, "<br>") + '<span class="blinking-cursor"></span>';
           scrollToBottom();
         } else if (data.type === "tool_data") {
           renderToolCard(toolsEl, data.tool, data.data);
@@ -243,9 +248,29 @@ async function submitMessage(rawText) {
   } catch (err) {
     accumulated = accumulated || "Something went wrong. Please try again.";
   } finally {
+    stopLoadingAnimation();
     finalizeAssistantMessage(assistantNode, accumulated);
     setLoading(false);
     scrollToBottom();
+  }
+}
+
+let loadingInterval;
+function startLoadingAnimation(contentEl) {
+  const phrases = ["Planning Trip...", "Searching Flights...", "Checking Weather...", "Generating Itinerary..."];
+  let idx = 0;
+  contentEl.innerHTML = `<div class="loading-indicator"><svg class="icon spinner-icon" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span class="loading-text">${phrases[0]}</span></div>`;
+  const textEl = contentEl.querySelector('.loading-text');
+  loadingInterval = setInterval(() => {
+    idx = (idx + 1) % phrases.length;
+    if(textEl) textEl.textContent = phrases[idx];
+  }, 2000);
+}
+
+function stopLoadingAnimation() {
+  if (loadingInterval) {
+    clearInterval(loadingInterval);
+    loadingInterval = null;
   }
 }
 
