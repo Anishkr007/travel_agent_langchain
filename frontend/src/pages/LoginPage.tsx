@@ -13,27 +13,18 @@ export const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
     try {
       const formData = new URLSearchParams();
-      formData.append('username', email); // OAuth2 requires username field
+      formData.append('username', email);
       formData.append('password', password);
-      
       const res = await fetch('http://localhost:8000/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData,
       });
-      
-      if (!res.ok) {
-        throw new Error('Invalid credentials');
-      }
-      
+      if (!res.ok) throw new Error('Invalid credentials');
       const data = await res.json();
       setTokens(data.access_token, data.refresh_token);
-      
       const meRes = await fetchWithAuth('/auth/me');
       if (meRes.ok) {
         const userData = await meRes.json();
@@ -46,37 +37,55 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="auth-container" style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem' }}>
-      <h2>Login</h2>
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div>
-          <label>Email</label>
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
+    <div className="min-h-screen flex items-center justify-center bg-bg font-sans p-4">
+      <div className="w-full max-w-[360px]">
+        <div className="mb-8">
+          <h2 className="text-[20px] font-semibold text-text mb-1">Sign in</h2>
+          <p className="text-[13px] text-text-secondary">Welcome back to Wander AI</p>
         </div>
-        <div>
-          <label>Password</label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </div>
-        <button type="submit" style={{ padding: '0.75rem', marginTop: '1rem', background: 'var(--primary-color)', color: 'white', border: 'none', borderRadius: '4px' }}>
-          Sign In
-        </button>
-      </form>
-      <p style={{ marginTop: '1rem', textAlign: 'center' }}>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
+
+        {error && (
+          <div className="mb-5 p-3 rounded-md text-[13px] font-medium text-error bg-error/10 border border-error/20">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[12px] font-medium text-text-secondary">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-[14px] text-text outline-none focus:border-accent transition-colors"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[12px] font-medium text-text-secondary">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full bg-surface border border-border rounded-md px-3 py-2 text-[14px] text-text outline-none focus:border-accent transition-colors"
+            />
+          </div>
+          <button
+            type="submit"
+            className="mt-2 w-full bg-accent text-bg font-medium text-[14px] py-2.5 rounded-md hover:opacity-90 transition-opacity"
+          >
+            Continue
+          </button>
+        </form>
+
+        <p className="mt-6 text-[13px] text-text-secondary">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-text hover:text-accent transition-colors underline underline-offset-2">
+            Sign up
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

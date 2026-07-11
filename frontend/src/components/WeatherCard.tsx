@@ -21,38 +21,37 @@ export const WeatherCard: React.FC<WeatherProps> = ({ data }) => {
   };
 
   return (
-    <div className="weather-card">
-      <div className="weather-header">
-        <h3 className="weather-location">{data.location}</h3>
-        <div className="weather-temp-group">
-          <img 
-            src={`https://openweathermap.org/img/wn/${data.icon}.png`} 
+    <div className="mt-3 mb-1 max-w-sm w-full rounded-md border border-border bg-surface overflow-hidden">
+      <div className="p-3.5 flex justify-between items-start border-b border-border">
+        <div>
+          <h3 className="text-[14px] font-semibold text-text">{data.location}</h3>
+          <p className="text-[12px] text-text-secondary capitalize mt-0.5">{data.description}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <img
+            src={`https://openweathermap.org/img/wn/${data.icon}.png`}
             alt={data.description}
-            className="weather-icon-img"
+            className="w-8 h-8 opacity-90"
           />
-          <span className="weather-temp">{Math.round(data.temp)}°C</span>
+          <span className="font-mono text-[20px] font-medium text-text">{Math.round(data.temp)}°</span>
         </div>
       </div>
-      
-      <p className="weather-desc">{data.description}</p>
-      
-      <div className="weather-grid">
-        <div className="weather-grid-item">
-          <Wind className="weather-grid-icon" />
-          <span>{data.wind_speed} m/s</span>
-        </div>
-        <div className="weather-grid-item">
-          <Droplets className="weather-grid-icon" />
-          <span>{data.humidity}%</span>
-        </div>
-        <div className="weather-grid-item">
-          <Sunrise className="weather-grid-icon" />
-          <span>{formatTime(data.sunrise)}</span>
-        </div>
-        <div className="weather-grid-item">
-          <Sunset className="weather-grid-icon" />
-          <span>{formatTime(data.sunset)}</span>
-        </div>
+
+      <div className="p-3.5 grid grid-cols-2 gap-y-3 gap-x-4 bg-bg">
+        {[
+          { icon: Wind,    label: 'Wind',    value: `${data.wind_speed} m/s` },
+          { icon: Droplets, label: 'Humidity', value: `${data.humidity}%` },
+          { icon: Sunrise, label: 'Sunrise',  value: formatTime(data.sunrise) },
+          { icon: Sunset,  label: 'Sunset',   value: formatTime(data.sunset) },
+        ].map(({ icon: Icon, label, value }) => (
+          <div key={label} className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-1.5 text-text-secondary">
+              <Icon size={12} />
+              <span className="text-[11px] font-medium uppercase tracking-wider">{label}</span>
+            </div>
+            <span className="font-mono text-[13px] text-text ml-4.5">{value}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
