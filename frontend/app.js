@@ -5,65 +5,23 @@
 
 const API_BASE = "https://travel-agent-langchain.onrender.com/api";
 
-// ---------- Token storage ----------
-const getTokens = () => ({
-  accessToken: localStorage.getItem("access_token"),
-  refreshToken: localStorage.getItem("refresh_token"),
-});
-const setTokens = (access, refresh) => {
-  localStorage.setItem("access_token", access);
-  localStorage.setItem("refresh_token", refresh);
-};
-const clearTokens = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
-};
-
-// ---------- Authenticated fetch with auto-refresh ----------
-async function fetchWithAuth(endpoint, options = {}) {
-  let { accessToken } = getTokens();
-  if (!accessToken) throw new Error("No access token");
-
+// ---------- Simple fetch wrapper ----------
+async function fetchApi(endpoint, options = {}) {
   const headers = new Headers(options.headers || {});
-  headers.set("Authorization", `Bearer ${accessToken}`);
   if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-
-  let response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-
-  if (response.status === 401) {
-    const { refreshToken } = getTokens();
-    if (refreshToken) {
-      const refreshRes = await fetch(`${API_BASE}/auth/refresh`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      });
-      if (refreshRes.ok) {
-        const data = await refreshRes.json();
-        setTokens(data.access_token, data.refresh_token);
-        headers.set("Authorization", `Bearer ${data.access_token}`);
-        response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-      } else {
-        clearTokens();
-        throw new Error("Session expired");
-      }
-    }
-  }
-  return response;
+  return fetch(`${API_BASE}${endpoint}`, { ...options, headers });
 }
 
 // ---------- App state ----------
-let currentUser = null; // { id, email, name }
+let currentUser = { id: "guest", name: "Guest", email: "guest@wander.ai" };
 let messages = []; // { id, role, content, toolData: [{tool, data}] }
 let isLoading = false;
 
 // ---------- DOM refs ----------
 const el = (id) => document.getElementById(id);
 const views = {
-  login: el("view-login"),
-  register: el("view-register"),
   app: el("view-app"),
 };
 const pages = {
@@ -81,21 +39,6 @@ function currentRoute() {
 async function router() {
   const route = currentRoute();
 
-  if (!currentUser) {
-    Object.values(views).forEach((v) => v.classList.add("hidden"));
-    if (route === "/register") {
-      views.register.classList.remove("hidden");
-    } else {
-      views.login.classList.remove("hidden");
-    }
-    return;
-  }
-
-  // Logged in: show app shell
-  views.login.classList.add("hidden");
-  views.register.classList.add("hidden");
-  views.app.classList.remove("hidden");
-
   const target = route === "/profile" ? "profile" : "chat";
   Object.entries(pages).forEach(([name, node]) => {
     node.classList.toggle("hidden", name !== target);
@@ -110,106 +53,19 @@ async function router() {
 window.addEventListener("hashchange", router);
 
 // ===================================================================
-// Auth
+// App Init
 // ===================================================================
-async function initAuth() {
-  const { accessToken } = getTokens();
-  if (accessToken) {
-    try {
-      const res = await fetchWithAuth("/auth/me");
-      if (res.ok) {
-        currentUser = await res.json();
-        applyUserToUI();
-      } else {
-        clearTokens();
-      }
-    } catch {
-      clearTokens();
-    }
-  }
+function initApp() {
+  applyUserToUI();
   router();
 }
 
 function applyUserToUI() {
-  const name = currentUser.name || currentUser.email?.split("@")[0] || "Traveler";
-  const initials = (currentUser.name || currentUser.email || "??")
-    .split(" ")
-    .map((s) => s[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const name = currentUser.name || "Guest";
+  const initials = "GU";
   el("user-name").textContent = name;
   el("user-avatar").textContent = initials;
 }
-
-el("login-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const errBox = el("login-error");
-  errBox.classList.add("hidden");
-  const email = el("login-email").value;
-  const password = el("login-password").value;
-
-  try {
-    const formData = new URLSearchParams();
-    formData.append("username", email);
-    formData.append("password", password);
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData,
-    });
-    if (!res.ok) throw new Error("Invalid credentials");
-    const data = await res.json();
-    setTokens(data.access_token, data.refresh_token);
-    const meRes = await fetchWithAuth("/auth/me");
-    currentUser = await meRes.json();
-    applyUserToUI();
-    location.hash = "#/chat";
-    router();
-  } catch (err) {
-    errBox.textContent = err.message || "Login failed";
-    errBox.classList.remove("hidden");
-  }
-});
-
-el("register-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const errBox = el("register-error");
-  errBox.classList.add("hidden");
-  const name = el("register-name").value;
-  const email = el("register-email").value;
-  const password = el("register-password").value;
-
-  try {
-    const res = await fetch(`${API_BASE}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
-    });
-    if (!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.detail || "Registration failed");
-    }
-    const data = await res.json();
-    setTokens(data.access_token, data.refresh_token);
-    const meRes = await fetchWithAuth("/auth/me");
-    currentUser = await meRes.json();
-    applyUserToUI();
-    location.hash = "#/chat";
-    router();
-  } catch (err) {
-    errBox.textContent = err.message || "Registration failed";
-    errBox.classList.remove("hidden");
-  }
-});
-
-el("logout-btn").addEventListener("click", () => {
-  clearTokens();
-  currentUser = null;
-  messages = [];
-  location.hash = "#/login";
-  router();
-});
 
 // ===================================================================
 // Chat
@@ -335,10 +191,10 @@ async function submitMessage(rawText) {
   let firstToken = true;
 
   try {
-    const response = await fetchWithAuth("/chat/chat", {
+    const response = await fetchApi("/chat/chat", {
       method: "POST",
       body: JSON.stringify({
-        user_id: currentUser?.id || "unknown",
+        user_id: currentUser?.id || "guest",
         thread_id: threadId(),
         message: text,
       }),
@@ -550,7 +406,7 @@ async function loadProfile() {
   loadingEl.classList.remove("hidden");
 
   try {
-    const res = await fetchWithAuth(`/profile/${currentUser.id}`);
+    const res = await fetchApi(`/profile/${currentUser.id}`);
     if (!res.ok) throw new Error("Failed to load profile");
     const profile = await res.json();
 
@@ -581,4 +437,4 @@ async function loadProfile() {
 // ===================================================================
 // Boot
 // ===================================================================
-initAuth();
+initApp();

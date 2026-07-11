@@ -6,7 +6,6 @@ from langchain_core.messages import HumanMessage
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.models.schemas import ChatRequest
 from app.database.mongodb import get_database
-from app.middleware.auth import get_current_user
 from app.services.user_service import get_user_preferences
 from app.graph.graph import get_compiled_graph
 
@@ -16,11 +15,10 @@ router = APIRouter()
 async def chat_endpoint(
     request: ChatRequest, 
     req: Request, 
-    current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_database)
 ):
-    user_id = str(current_user["_id"])
-    thread_id = request.thread_id
+    user_id = request.user_id if getattr(request, 'user_id', None) else "guest"
+    thread_id = request.thread_id if getattr(request, 'thread_id', None) else "guest"
     message = request.message
     
     async def event_generator():
@@ -30,7 +28,7 @@ async def chat_endpoint(
             
             # The structure of profile comes from the DB directly now
             profile_dict = {
-                "name": current_user.get("name", "Traveler"),
+                "name": "Guest",
                 "favorite_destinations": profile.get("favorite_destinations", []),
                 "budget_preference": profile.get("budget_preference"),
                 "food_preference": profile.get("food_preference"),

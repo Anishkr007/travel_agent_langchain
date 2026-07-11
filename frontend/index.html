@@ -15,59 +15,10 @@
     <div class="glow glow-teal"></div>
   </div>
 
-  <!-- ===================== AUTH VIEWS ===================== -->
-  <div id="view-login" class="auth-view hidden">
-    <div class="auth-card">
-      <div class="auth-head">
-        <span class="brand-mark">✈</span>
-        <h1>Sign in</h1>
-        <p>Welcome back to Wander AI</p>
-      </div>
-      <div id="login-error" class="form-error hidden"></div>
-      <form id="login-form">
-        <label>
-          <span>Email</span>
-          <input type="email" id="login-email" required autocomplete="email" />
-        </label>
-        <label>
-          <span>Password</span>
-          <input type="password" id="login-password" required autocomplete="current-password" />
-        </label>
-        <button type="submit" class="btn-gradient full">Continue</button>
-      </form>
-      <p class="auth-switch">Don't have an account? <a href="#/register">Sign up</a></p>
-    </div>
-  </div>
 
-  <div id="view-register" class="auth-view hidden">
-    <div class="auth-card">
-      <div class="auth-head">
-        <span class="brand-mark">✈</span>
-        <h1>Create account</h1>
-        <p>Join Wander AI</p>
-      </div>
-      <div id="register-error" class="form-error hidden"></div>
-      <form id="register-form">
-        <label>
-          <span>Full name</span>
-          <input type="text" id="register-name" required autocomplete="name" />
-        </label>
-        <label>
-          <span>Email</span>
-          <input type="email" id="register-email" required autocomplete="email" />
-        </label>
-        <label>
-          <span>Password</span>
-          <input type="password" id="register-password" required autocomplete="new-password" />
-        </label>
-        <button type="submit" class="btn-gradient full">Sign up</button>
-      </form>
-      <p class="auth-switch">Already have an account? <a href="#/login">Sign in</a></p>
-    </div>
-  </div>
 
   <!-- ===================== APP SHELL ===================== -->
-  <div id="view-app" class="app-shell hidden">
+  <div id="view-app" class="app-shell">
 
     <aside class="sidebar">
       <div class="sidebar-brand">
@@ -91,9 +42,6 @@
         <div class="user-meta">
           <p id="user-name">Traveler</p>
         </div>
-        <button id="logout-btn" title="Sign out" class="icon-btn">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-        </button>
       </div>
     </aside>
 
