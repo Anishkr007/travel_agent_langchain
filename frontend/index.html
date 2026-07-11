@@ -363,12 +363,18 @@
 
               if (evt.type === 'token' && evt.content) {
                 fullAnswer += evt.content;
-              } else if (evt.type === 'tool_data') {
-                console.log("Tool data received:", evt.tool, evt.data);
-                if (FLIGHT_TOOLS.has(evt.tool)) {
-                  const rawFlights = (evt.data || {}).flights || [];
+              } else if (evt.type === 'done') {
+                // Flights are embedded in the done event by the backend
+                if (evt.flights && evt.flights.length > 0) {
+                  pendingFlights = evt.flights;
+                  console.log("Flights from done event:", pendingFlights);
+                }
+              } else if (evt.type === 'tool_data' && FLIGHT_TOOLS.has(evt.tool)) {
+                // Fallback: also try to capture from tool_data events
+                const rawFlights = (evt.data || {}).flights || [];
+                if (rawFlights.length > 0) {
                   pendingFlights = pendingFlights.concat(rawFlights.map(mapFlight));
-                  console.log("Mapped flights:", pendingFlights);
+                  console.log("Flights from tool_data event:", pendingFlights);
                 }
               } else if (evt.type === 'error') {
                 throw new Error(evt.error);

@@ -56,6 +56,7 @@ async def chat_endpoint(
                 }
                 
                 # 3. Stream graph execution
+                collected_flights = []
                 async for event in graph.astream_events(input_state, config, version="v1"):
                     if event["event"] == "on_chat_model_stream":
                         chunk = event["data"]["chunk"]
@@ -66,16 +67,52 @@ async def chat_endpoint(
                             }
                     elif event["event"] == "on_tool_end":
                         tool_name = event["name"]
-                        if tool_name in ["get_weather", "search_travel_info", "search_flights"]:
-                            output = event["data"]["output"]
+                        output = event["data"].get("output")
+                        if not output:
+                            continue
+                        # Parse output whether it's already a dict or a JSON string
+                        try:
+                            parsed = json.loads(output) if isinstance(output, str) else output
+                        except Exception:
+                            parsed = {}
+
+                        if tool_name == "search_flights" or "flight" in tool_name.lower():
+                            raw_flights = parsed.get("flights", [])
+                            def fmt_time(ts):
+                                if not ts: return "--"
+                                from datetime import datetime, timezone
+                                try:
+                                    dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
+                                    return dt.strftime("%b %d, %I:%M %p")
+                                except Exception:
+                                    return ts
+                            for f in raw_flights:
+                                dep = f.get("departure", {})
+                                arr = f.get("arrival", {})
+                                collected_flights.append({
+                                    "airline": f.get("airline", "Unknown"),
+                                    "flightNumber": f.get("flight_number", ""),
+                                    "status": f.get("status", "scheduled"),
+                                    "from": dep.get("iata", "--"),
+                                    "to": arr.get("iata", "--"),
+                                    "departTime": fmt_time(dep.get("scheduled")),
+                                    "arriveTime": fmt_time(arr.get("scheduled"))
+                                })
+                            # Also emit the raw tool_data for compatibility
                             yield {
                                 "event": "message",
-                                "data": json.dumps({"type": "tool_data", "tool": tool_name, "data": json.loads(output)})
+                                "data": json.dumps({"type": "tool_data", "tool": "search_flights", "data": parsed})
+                            }
+                        elif tool_name in ["get_weather", "search_travel_info"]:
+                            yield {
+                                "event": "message",
+                                "data": json.dumps({"type": "tool_data", "tool": tool_name, "data": parsed})
                             }
                             
+                # Emit done with collected flights embedded
                 yield {
                     "event": "message",
-                    "data": json.dumps({"type": "done"})
+                    "data": json.dumps({"type": "done", "flights": collected_flights})
                 }
                 
         except Exception as e:
