@@ -1,76 +1,329 @@
-# Wander AI ✈️
+# ✈️ Wander AI - Multi-Agent AI Travel Planner
 
-Wander AI is an intelligent, multi-agent travel planner built with a modern Python stack and a sleek, vanilla HTML/JS/CSS frontend. It helps users plan complete itineraries, look up live flight data, and check real-time weather at their destinations.
+An intelligent AI-powered travel planner built using **LangGraph**, **FastAPI**, **OpenAI**, and **React** that generates complete travel itineraries with live weather, flight information, and web search.
 
-## 🚀 Features
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
+![LangGraph](https://img.shields.io/badge/LangGraph-Agent-orange)
+![React](https://img.shields.io/badge/React-Frontend-61DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT-black)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-- **Multi-Agent Workflow:** Powered by LangGraph to intelligently route between LLM reasoning, memory retrieval, and external tool execution.
-- **Live Travel Data:** 
-  - Real-time weather via OpenWeather API.
-  - Live flight schedules and status via AviationStack API (with smart natural-language-to-IATA-code resolution).
-  - General web search via Tavily API.
-- **Robust Memory:** Full conversational memory and checkpointing using MongoDB, so you never lose the context of your trip planning.
-- **Authentication & Profiles:** JWT-based user authentication with stored travel preferences (budget, dietary restrictions, favorite destinations).
-- **Responsive UI:** A lightning-fast, glassmorphism-styled frontend built with vanilla HTML, CSS, and JS (no bulky frameworks). Fully mobile-ready.
-- **Export to PDF:** Instantly generate a PDF of your planned itinerary.
+---
 
-## 🛠️ Tech Stack
+# 🚀 Overview
 
-**Backend:**
-- **Framework:** FastAPI
-- **AI/LLM:** LangChain & LangGraph
-- **Database:** MongoDB (Motor async driver)
-- **Checkpointer:** `langgraph-checkpoint-mongodb`
-- **Observability:** LangSmith (for tracing agent decisions and token usage)
+Wander AI is a production-ready AI Travel Planner that combines multiple AI agents and external APIs to create personalized travel plans.
 
-**Frontend:**
-- **Core:** Vanilla HTML5, CSS3, JavaScript
-- **Dev Server:** Vite (used purely for local static serving and fast refresh)
-- **Libraries (CDN):** Marked (Markdown parsing), DOMPurify (HTML sanitization), jsPDF (PDF export)
+Instead of simply answering questions, the application:
 
-**Deployment & Infrastructure:**
-- **Containerization:** Docker & Docker Compose
-- **Platform:** Configured for Render (Backend as a Docker Web Service, Frontend as a Static Site)
-- **Database Hosting:** MongoDB Atlas
+- Searches live flight information
+- Retrieves real-time weather
+- Searches the web for attractions
+- Generates day-by-day itineraries
+- Estimates trip budgets
+- Recommends hotels and destinations
+- Uses AI to personalize recommendations
 
-## 🏗️ Getting Started (Local Development)
+---
 
-### 1. Prerequisites
-- [Docker & Docker Compose](https://www.docker.com/) (Optional, but recommended for easy setup)
-- [Node.js](https://nodejs.org/) (for serving the frontend)
-- Python 3.11+ (if running the backend bare-metal)
+# ✨ Features
 
-### 2. Environment Setup
-Copy the example environment files and fill in your API keys:
-```bash
-cp .env.example .env
-cp backend/.env.example backend/.env
+### 🤖 AI Planning
+
+- Multi-Agent Architecture using LangGraph
+- OpenAI GPT-powered reasoning
+- Intelligent itinerary generation
+- Budget planning
+- Personalized travel suggestions
+
+---
+
+### 🌍 Live Travel Information
+
+- ✈️ Live Flight Search
+- 🌦 Real-time Weather
+- 🔎 Web Search using Tavily
+- 🏨 Hotel Recommendations
+- 📍 Tourist Attractions
+
+---
+
+### 💬 Chat Experience
+
+- Streaming AI responses
+- Markdown support
+- Copy responses
+- Download itinerary as PDF
+- Beautiful modern UI
+- Responsive design
+
+---
+
+### 👤 User Features
+
+- Authentication
+- User Profiles
+- Travel Preferences
+- Favorite Destinations
+- Conversation Memory
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- React
+- Vite
+- JavaScript
+- HTML
+- CSS
+- Framer Motion
+
+## Backend
+
+- FastAPI
+- LangGraph
+- LangChain
+- OpenAI
+
+## Database
+
+- MongoDB Atlas
+
+## APIs
+
+- OpenAI API
+- Tavily Search API
+- OpenWeather API
+- AviationStack API
+
+## Deployment
+
+- Render
+- Vercel
+- Docker
+
+---
+
+# 🏗 Architecture
+
 ```
-*You will need API keys for OpenAI, Tavily, OpenWeather, AviationStack, and (optionally) LangSmith.*
-
-### 3. Run with Docker Compose
-The easiest way to run the backend and database locally is via Docker Compose:
-```bash
-docker compose up --build
+                User
+                  │
+                  ▼
+        React Frontend (Vercel)
+                  │
+                  ▼
+          FastAPI Backend
+                  │
+      ┌───────────┼───────────┐
+      │           │           │
+      ▼           ▼           ▼
+ LangGraph    MongoDB      OpenAI
+      │
+      ├──────────────┐
+      ▼              ▼
+ Weather API     Tavily Search
+      │
+      ▼
+ AviationStack
 ```
-This will start:
-- A local MongoDB instance on port `27017`
-- The FastAPI backend on `http://localhost:8000`
 
-*To verify the backend is running, visit `http://localhost:8000/api/health`.*
+---
 
-### 4. Run the Frontend
-In a new terminal, navigate to the `frontend` folder and start the Vite dev server:
+# 📂 Project Structure
+
+```
+travel_agent_langchain
+│
+├── backend
+│   ├── app
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── ...
+│
+├── frontend
+│   ├── app.js
+│   ├── style.css
+│   ├── index.html
+│   └── ...
+│
+└── README.md
+```
+
+---
+
+# ⚙️ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/Anishkr007/travel_agent_langchain.git
+
+cd travel_agent_langchain
+```
+
+---
+
+## Backend
+
+```bash
+cd backend
+
+python -m venv venv
+
+source venv/bin/activate
+```
+
+Windows
+
+```bash
+venv\Scripts\activate
+```
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Run
+
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+## Frontend
+
 ```bash
 cd frontend
+
 npm install
+
 npm run dev
 ```
-The frontend will be available at `http://localhost:5173`.
 
-## 🌍 Deployment
+---
 
-See the [DEPLOYMENT.md](./DEPLOYMENT.md) file for comprehensive instructions on deploying the application to Render.
+# 🔑 Environment Variables
 
-## 📝 License
-MIT License
+Backend
+
+```
+OPENAI_API_KEY=
+
+TAVILY_API_KEY=
+
+OPENWEATHER_API_KEY=
+
+AVIATIONSTACK_API_KEY=
+
+MONGODB_URI=
+
+LANGSMITH_API_KEY=
+
+LANGSMITH_TRACING=true
+
+LANGSMITH_PROJECT=wander-ai
+```
+
+---
+
+# 🌐 Deployment
+
+Frontend
+
+- Vercel
+
+Backend
+
+- Render
+
+Database
+
+- MongoDB Atlas
+
+---
+
+# 📸 Demo
+
+### Landing Page
+
+(Add Screenshot)
+
+### Chat Interface
+
+(Add Screenshot)
+
+### Generated Itinerary
+
+(Add Screenshot)
+
+---
+
+# 🚀 Future Improvements
+
+- Voice Assistant
+- Google Maps Integration
+- Hotel Booking APIs
+- Flight Booking APIs
+- Multi-language Support
+- Image Generation
+- AI Expense Tracker
+- Offline Travel Guide
+- Mobile App
+- Push Notifications
+
+---
+
+# 📚 What I Learned
+
+- LangGraph Multi-Agent Systems
+- FastAPI Production Deployment
+- Docker
+- MongoDB Atlas
+- OpenAI Streaming
+- REST APIs
+- Authentication
+- Full Stack Development
+- Cloud Deployment
+- Responsive UI Design
+
+---
+
+# 🤝 Contributing
+
+Pull requests are welcome.
+
+For major changes, please open an issue first to discuss your ideas.
+
+---
+
+# ⭐ Support
+
+If you found this project useful,
+
+please ⭐ the repository.
+
+---
+
+# 👨‍💻 Author
+
+**Anish Kumar**
+
+GitHub
+
+https://github.com/Anishkr007
+
+LinkedIn
+
+(Add LinkedIn Profile)
+
+---
+
+## ⭐ If you like this project, don't forget to Star the repository!
