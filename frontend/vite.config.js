@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [],
+  // No plugins needed for vanilla JS
 })
