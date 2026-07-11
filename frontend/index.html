@@ -290,64 +290,101 @@
       if(!userPrompt){ showError('Please enter your travel request first.'); return; }
 
       setLoading(true);
+      const threadId = crypto.randomUUID();
       try{
         const flightList = document.getElementById('flightList');
         if (flightList) flightList.innerHTML = '';
-        const url = 'https://travel-agent-langchain.onrender.com/api/chat/travel';
-        const method = 'POST';
-        const headers = { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        };
+        const url = 'https://travel-agent-langchain.onrender.com/api/chat/chat';
         const body = JSON.stringify({ 
-          thread_id: crypto.randomUUID(),
+          thread_id: threadId,
           user_id: "guest",
           message: userPrompt 
         });
 
-        // 13. Temporary Detailed Logging
-        console.log("=== API REQUEST ===");
-        console.log("Request URL:", url);
-        console.log("Method:", method);
-        console.log("Headers:", headers);
-        console.log("Body:", body);
+        console.log("=== API REQUEST ===", url, body);
 
-        const response = await fetch(url, { method, headers, body });
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+          body
+        });
         
         console.log("Response Status:", response.status, response.statusText);
 
         if (!response.ok) {
            let errorMsg = `Backend Error: ${response.status} ${response.statusText}`;
-           if (response.status === 422) errorMsg = `Validation Error: The request payload is incorrect (422).`;
-           if (response.status === 404) errorMsg = `Endpoint Not Found (404).`;
-           
            try {
-             // Attempt to read the actual backend error JSON
              const errorData = await response.json();
              console.error("Backend Error JSON:", errorData);
-             if (errorData.detail) {
-               // FastAPI Validation errors are usually in 'detail' array or string
-               errorMsg = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
-             } else if (errorData.error) {
-               errorMsg = errorData.error;
-             }
-           } catch(e) {
-             console.error("Could not parse error response JSON", e);
-           }
+             if (errorData.detail) errorMsg = typeof errorData.detail === 'string' ? errorData.detail : JSON.stringify(errorData.detail);
+             else if (errorData.error) errorMsg = errorData.error;
+           } catch(e) { console.error("Could not parse error response JSON", e); }
            throw new Error(errorMsg);
         }
 
-        const data = await response.json();
-        
-        if (data.flights && data.flights.length > 0) {
-          renderFlights(data.flights);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let fullAnswer = "";
+        let buffer = "";
+        let pendingFlights = [];
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, {stream: true});
+          
+          // Process complete SSE lines
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // keep incomplete last line
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const raw = line.substring(6).trim();
+            if (!raw) continue;
+            try {
+              const data = JSON.parse(raw);
+              console.log("SSE event:", data);
+              if (data.type === 'token' && data.content) {
+                fullAnswer += data.content;
+              } else if (data.type === 'tool_data' && data.tool === 'search_flights') {
+                // data.data = { route, flights: [{airline, flight_number, status, departure:{iata,scheduled}, arrival:{iata,scheduled}}] }
+                const toolData = data.data || {};
+                const rawFlights = toolData.flights || [];
+                const mapped = rawFlights.map(f => {
+                  const dep = f.departure || {};
+                  const arr = f.arrival || {};
+                  const fmtTime = ts => {
+                    if (!ts) return '--';
+                    try { return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); }
+                    catch(e) { return ts; }
+                  };
+                  return {
+                    airline: f.airline || 'Unknown',
+                    flightNumber: f.flight_number || '',
+                    status: f.status || 'scheduled',
+                    from: dep.iata || '--',
+                    to: arr.iata || '--',
+                    departTime: fmtTime(dep.scheduled),
+                    arriveTime: fmtTime(arr.scheduled)
+                  };
+                });
+                pendingFlights = pendingFlights.concat(mapped);
+              } else if (data.type === 'error') {
+                console.error("Stream Error from Backend:", data.error);
+                throw new Error(data.error);
+              }
+            } catch(e) {
+              // ignore parse errors on partial chunks
+            }
+          }
         }
-        
-        // Show result, replacing the UI thread_id text logic if needed
-        showResult(data.answer, data.thread_id);
+
+        if (pendingFlights.length > 0) renderFlights(pendingFlights);
+        showResult(fullAnswer, threadId);
+
       } catch(err){
         console.error("Network Error / Catch Block:", err);
-        showError(err.message || 'Network Error - The backend could not be reached. Check CORS or your connection.');
+        showError(err.message || 'Network Error - The backend could not be reached.');
       } finally {
         setLoading(false);
       }
