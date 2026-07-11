@@ -1,166 +1,765 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Wander AI — Plan Your Perfect Trip</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wander AI - Sunset Theme</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    /* CSS Variables for Light/Dark Mode */
+    :root {
+      /* Light Mode Defaults */
+      --bg: #F7F2E9;
+      --surface: #FFFFFF;
+      --surface-elevated: #FDFBFC;
+      --text: #121110;
+      --text-muted: #6B6862;
+      --border: #E8E2D9;
+      --border-hover: #D4CDBC;
+      --shadow: 0 4px 12px rgba(18, 17, 16, 0.05);
+      --shadow-hover: 0 12px 24px rgba(18, 17, 16, 0.1);
+      
+      --accent-primary: #E85D3C;
+      --accent-secondary: #F0A840;
+      --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      
+      --font-heading: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    [data-theme="dark"] {
+      --bg: #121110;
+      --surface: #1E1C1A;
+      --surface-elevated: #282522;
+      --text: #F7F2E9;
+      --text-muted: #A39E96;
+      --border: #332F2B;
+      --border-hover: #4A453E;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-hover: 0 12px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Accessibility */
+    :focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background-color: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 20px;
+      transition: var(--transition);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--accent-gradient);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-item:hover {
+      background-color: var(--surface-elevated);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(232, 93, 60, 0.1);
+      color: var(--accent-primary);
+    }
+
+    /* Theme Toggle Pill */
+    .theme-toggle-wrap {
+      margin-bottom: 24px;
+      padding: 0 16px;
+    }
+    
+    .theme-toggle {
+      background-color: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      width: 100%;
+      height: 48px;
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px;
+    }
+
+    .theme-toggle-knob {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc(50% - 4px);
+      height: 40px;
+      background: var(--surface);
+      border-radius: 99px;
+      box-shadow: var(--shadow);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="dark"] .theme-toggle-knob {
+      transform: translateX(100%);
+    }
+
+    .theme-icon {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+    }
+
+    [data-theme="light"] .theme-icon.light { color: var(--accent-primary); }
+    [data-theme="dark"] .theme-icon.dark { color: var(--accent-secondary); }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top: auto;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+    .user-email { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      scroll-behavior: smooth;
+    }
+
+    .content-wrapper {
+      max-width: 720px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeSlideUp 0.6s ease-out;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 1.1;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .hero-title .gradient-text {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-muted);
+    }
+
+    /* Ticket Card */
+    .ticket-card {
+      width: 100%;
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.05));
+      animation: fadeSlideUp 0.8s ease-out backwards;
+      animation-delay: 0.1s;
+    }
+
+    [data-theme="dark"] .ticket-card { filter: drop-shadow(0 12px 24px rgba(0,0,0,0.2)); }
+
+    .ticket-top { padding: 32px; }
+
+    .ticket-input {
+      width: 100%;
+      min-height: 100px;
+      background: transparent;
+      border: none;
+      resize: none;
+      font-family: var(--font-body);
+      font-size: 18px;
+      line-height: 1.5;
+      color: var(--text);
+      outline: none;
+      overflow-y: hidden;
+    }
+
+    .ticket-input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+    /* Perforated Divider */
+    .ticket-divider {
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .ticket-divider-line {
+      width: 100%;
+      height: 0;
+      border-bottom: 2px dashed var(--border);
+    }
+
+    .notch {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background-color: var(--bg);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: background-color 0.3s ease;
+    }
+
+    .notch.left { left: -15px; }
+    .notch.right { right: -15px; }
+
+    .ticket-bottom { padding: 24px 32px 32px; }
+
+    .generate-btn {
+      width: 100%;
+      background: var(--accent-gradient);
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      color: white;
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(232, 93, 60, 0.3);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 60px;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(232, 93, 60, 0.4);
+    }
+
+    .generate-btn:active:not(:disabled) { transform: translateY(0); }
+    
+    .generate-btn:disabled {
+      opacity: 0.8;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      display: none;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Suggestions */
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 40px;
+      animation: fadeSlideUp 1s ease-out backwards;
+      animation-delay: 0.2s;
+    }
+
+    .suggestion-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .suggestion-pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .suggestion-pill.active {
+      background: var(--accent-gradient);
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Results Section */
+    .results-section {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      gap: 32px;
+      padding-bottom: 60px;
+    }
+
+    .results-section.show {
+      display: flex;
+      animation: slideUpFade 0.6s ease-out forwards;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent-primary);
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .itinerary {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .day-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      gap: 24px;
+      transition: var(--transition);
+    }
+    
+    .day-card:hover { border-color: var(--accent-secondary); }
+
+    .day-tag {
+      background: rgba(240, 168, 64, 0.1);
+      color: var(--accent-secondary);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      height: fit-content;
+      white-space: nowrap;
+    }
+
+    .day-content h3 {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .day-content p {
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: auto;
+      padding: 40px 0 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .sidebar { display: none; }
+      .main-content { padding: 24px 16px; }
+      .hero-title { font-size: 2.2rem; }
+      .ticket-top, .ticket-bottom { padding: 24px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .day-card { flex-direction: column; gap: 16px; }
+    }
+  </style>
 </head>
-<body>
+<body data-theme="dark">
 
-  <!-- Ambient background (fixed, behind everything) -->
-  <div class="ambient-bg">
-    <div class="glow glow-blue"></div>
-    <div class="glow glow-violet"></div>
-    <div class="glow glow-teal"></div>
-  </div>
-  <div class="noise-overlay"></div>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <a href="#" class="logo">
+        <div class="logo-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+        </div>
+        Wander AI
+      </a>
 
-  <!-- ===================== APP SHELL ===================== -->
-  <div id="view-app" class="app-shell">
-
-    <aside class="sidebar glass-panel">
-      <div class="sidebar-brand">
-        <span class="brand-mark">✨</span>
-        <span>Wander AI</span>
+      <!-- Theme Toggle -->
+      <div class="theme-toggle-wrap">
+        <div class="theme-toggle" id="theme-toggle" role="button" aria-label="Toggle dark and light mode" tabindex="0">
+          <div class="theme-toggle-knob"></div>
+          <div class="theme-icon light">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </div>
+          <div class="theme-icon dark">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </div>
+        </div>
       </div>
 
-      <nav class="sidebar-nav">
-        <a href="#/chat" data-nav="chat" class="nav-item">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          Chat
+      <nav class="nav-links">
+        <a href="#" class="nav-item active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Plan Trip
         </a>
-        <a href="#/profile" data-nav="profile" class="nav-item">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        <a href="#" class="nav-item">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Profile
         </a>
       </nav>
 
-      <div class="sidebar-user">
-        <div class="avatar" id="user-avatar">--</div>
-        <div class="user-meta">
-          <p id="user-name">Traveler</p>
+      <div class="user-card">
+        <div class="avatar">T</div>
+        <div class="user-info">
+          <div class="user-name">Traveler</div>
+          <div class="user-email">traveler@wander.ai</div>
         </div>
       </div>
     </aside>
 
-    <header class="mobile-header glass-panel">
-      <span class="brand-mark">✨</span> Wander AI
-      <div class="mobile-nav">
-        <a href="#/chat">Chat</a>
-        <a href="#/profile">Profile</a>
-      </div>
-    </header>
+    <!-- Main -->
+    <main class="main-content">
+      <div class="content-wrapper">
+        
+        <header class="hero">
+          <div class="badge">Your Golden Hour Gateway</div>
+          <h1 class="hero-title">Discover your next <span class="gradient-text">journey</span></h1>
+          <p class="hero-sub">Enter a destination to generate a complete itinerary and flight options.</p>
+        </header>
 
-    <!-- ---------- CHAT PAGE ---------- -->
-    <main id="page-chat" class="page glass-panel hidden">
+        <!-- Ticket Card -->
+        <div class="ticket-card">
+          <div class="ticket-top">
+            <textarea id="prompt-input" class="ticket-input" placeholder="e.g. A 5-day desert safari in Dubai with luxury stays..."></textarea>
+          </div>
+          
+          <div class="ticket-divider">
+            <div class="notch left"></div>
+            <div class="ticket-divider-line"></div>
+            <div class="notch right"></div>
+          </div>
+          
+          <div class="ticket-bottom">
+            <button id="generate-btn" class="generate-btn">
+              <span class="btn-text">Generate Plan</span>
+              <div class="spinner"></div>
+            </button>
+          </div>
+        </div>
 
-      <div id="chat-scroll" class="chat-scroll">
+        <!-- Suggestion Pills -->
+        <div class="suggestions" id="suggestions">
+          <button class="suggestion-pill">7 days in Kyoto</button>
+          <button class="suggestion-pill">Weekend in Rome</button>
+          <button class="suggestion-pill">Maldives honeymoon</button>
+          <button class="suggestion-pill">Safari in Serengeti</button>
+        </div>
 
-        <!-- Hero / empty state -->
-        <section id="hero" class="hero">
-          <span class="badge">✨ Wander AI — A Multi-Agent Travel Planner</span>
-          <h1>Plan Your <span class="grad-text">Perfect Trip</span></h1>
-          <p class="hero-sub">Search flights, discover hotels, and generate a complete travel itinerary using a multi-agent LangGraph system.</p>
+        <!-- Results -->
+        <div id="results" class="results-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" data-target="420">0</div>
+              <div class="stat-label">Flights Found</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" data-target="15">0</div>
+              <div class="stat-label">Hotels Scanned</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" data-target="7">0</div>
+              <div class="stat-label">Days Planned</div>
+            </div>
+          </div>
 
-          <div class="planner-card glass-panel">
-            <div class="planner-head">
-              <div>
-                <h2>Where do you want to go?</h2>
-                <p>Example: Plan a complete 7 day Nepal trip from Delhi under ₹80,000.</p>
+          <div class="itinerary">
+            <div class="day-card">
+              <div class="day-tag">DAY 01</div>
+              <div class="day-content">
+                <h3>Arrival & Golden Hour Welcome</h3>
+                <p>Arrive at the destination, settle into your premium accommodation, and head out for a sunset welcome dinner overlooking the city skyline as the golden hour hits.</p>
               </div>
-              <span class="status-pill"><span class="status-dot"></span>Online</span>
             </div>
-
-            <div class="input-row">
-              <textarea id="hero-input" rows="4" placeholder="Plan a complete 7 day Nepal trip including flights, hotels and sightseeing..."></textarea>
-              <button id="hero-send" class="btn-gradient">
-                <span class="btn-label">Generate Plan</span>
-                <span class="btn-loader hidden"></span>
-              </button>
+            <div class="day-card">
+              <div class="day-tag">DAY 02</div>
+              <div class="day-content">
+                <h3>Cultural Exploration</h3>
+                <p>Spend the morning traversing historical landmarks. Enjoy a local culinary experience for lunch, followed by a guided architectural walk through the old town.</p>
+              </div>
             </div>
-
-            <div class="quick-prompts">
-              <button data-prompt="Plan a complete 7 day Nepal trip from Delhi under ₹80,000, including flights, hotels and sightseeing.">Nepal Trip</button>
-              <button data-prompt="Plan a complete 7 day Japan trip including flights, hotels and sightseeing under 2 lakhs.">Japan Trip</button>
-              <button data-prompt="Plan a 5 day Thailand trip from Mumbai with beach and city stops.">Thailand Trip</button>
-              <button data-prompt="Find flight options from Delhi to Kathmandu next week.">Global Flights</button>
+            <div class="day-card">
+              <div class="day-tag">DAY 03</div>
+              <div class="day-content">
+                <h3>Leisure & Departure</h3>
+                <p>A relaxed morning with a spa session or light shopping. Transfer to the airport smoothly with your pre-booked premium chauffeur service.</p>
+              </div>
             </div>
-          </div>
-
-          <p class="footer-tag">Built with FastAPI, LangGraph, OpenAI, MongoDB, Tavily and AviationStack.</p>
-        </section>
-
-        <!-- Message thread -->
-        <section id="messages" class="messages hidden"></section>
-
-      </div>
-
-      <!-- Bottom composer (shown once a conversation has started) -->
-      <div class="composer-wrapper">
-        <div id="composer" class="composer hidden">
-          <input id="chat-input" type="text" placeholder="Ask about a destination…" autocomplete="off" />
-          <button id="chat-send" class="send-btn">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
-          </button>
-        </div>
-      </div>
-    </main>
-
-    <!-- ---------- PROFILE PAGE ---------- -->
-    <main id="page-profile" class="page glass-panel hidden">
-      <div class="profile-wrap">
-        <h1 class="profile-title">
-          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
-          Traveler Profile
-        </h1>
-
-        <div id="profile-loading" class="muted-line">Loading profile…</div>
-
-        <div id="profile-content" class="hidden">
-          <div class="panel">
-            <div class="panel-head">Preferences</div>
-            <div id="profile-fields" class="panel-body"></div>
-          </div>
-
-          <div class="panel">
-            <div class="panel-head">Favorite Destinations</div>
-            <div id="profile-destinations" class="panel-body chips-body"></div>
           </div>
         </div>
+
+        <footer class="footer">
+          Designed by Wander AI • Sunset Edition
+        </footer>
       </div>
     </main>
-
   </div>
 
-  <!-- Templates -->
-  <template id="tpl-msg-user">
-    <div class="msg msg-user"><div class="msg-content"></div></div>
-  </template>
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
 
-  <template id="tpl-msg-assistant">
-    <div class="msg msg-assistant">
-      <div class="msg-label">WANDER</div>
-      <div class="msg-content"></div>
-      <div class="msg-tools"></div>
-      <div class="msg-actions hidden">
-        <button class="action-btn copy-btn">
-          <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
-          Copy
-        </button>
-        <button class="action-btn pdf-btn">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-          Download PDF
-        </button>
-      </div>
-    </div>
-  </template>
+    function toggleTheme() {
+      const currentTheme = body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      body.setAttribute('data-theme', newTheme);
+    }
 
-  <!-- Third-party (CDN) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    themeToggle.addEventListener('click', toggleTheme);
+    themeToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
 
-  <script type="module" src="/app.js"></script>
+    // Auto-resize textarea
+    const textarea = document.getElementById('prompt-input');
+    textarea.addEventListener('input', function() {
+      this.style.height = 'auto';
+      this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Suggestion Pills
+    const pills = document.querySelectorAll('.suggestion-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        textarea.value = pill.textContent + '...';
+        textarea.dispatchEvent(new Event('input')); // trigger resize
+        textarea.focus();
+      });
+    });
+
+    // Generate Button & Animation
+    const generateBtn = document.getElementById('generate-btn');
+    const btnText = generateBtn.querySelector('.btn-text');
+    const spinner = generateBtn.querySelector('.spinner');
+    const results = document.getElementById('results');
+
+    // Number Count-Up Animation
+    function animateValue(obj, start, end, duration) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // easeOutQuart
+        const easeProgress = 1 - Math.pow(1 - progress, 4);
+        obj.innerHTML = Math.floor(easeProgress * (end - start) + start);
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          obj.innerHTML = end;
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    generateBtn.addEventListener('click', () => {
+      // Set Loading State
+      generateBtn.disabled = true;
+      btnText.style.display = 'none';
+      spinner.style.display = 'block';
+      results.classList.remove('show');
+
+      // Simulate API call (1.5s)
+      setTimeout(() => {
+        generateBtn.disabled = false;
+        btnText.style.display = 'block';
+        spinner.style.display = 'none';
+        
+        // Show Results
+        results.classList.add('show');
+        
+        // Trigger Number Counters
+        setTimeout(() => {
+          document.querySelectorAll('.stat-value').forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-target'));
+            animateValue(stat, 0, target, 1500);
+          });
+        }, 100); // slight delay after slide-up starts
+        
+        // Smooth scroll to results
+        setTimeout(() => {
+          results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 150);
+
+      }, 1500);
+    });
+  </script>
 </body>
 </html>
