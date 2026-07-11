@@ -1,77 +1,109 @@
-# ✈️ Wander AI - Multi-Agent AI Travel Planner
+# ✈️ Wander AI – Multi-Agent AI Travel Planner
 
-An intelligent AI-powered travel planner built using **LangGraph**, **FastAPI**, **OpenAI**, and **React** that generates complete travel itineraries with live weather, flight information, and web search.
+An AI-powered travel planner built with **LangGraph**, **FastAPI**, **OpenAI**, and **React** that creates personalized travel itineraries using multiple AI agents, real-time weather, flight information, and intelligent web search.
+
+<p align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688)
-![LangGraph](https://img.shields.io/badge/LangGraph-Agent-orange)
+![LangGraph](https://img.shields.io/badge/LangGraph-AI%20Workflow-orange)
+![LangSmith](https://img.shields.io/badge/LangSmith-Tracing-purple)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green)
 ![React](https://img.shields.io/badge/React-Frontend-61DAFB)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-green)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT-black)
-![License](https://img.shields.io/badge/License-MIT-blue)
+
+</p>
 
 ---
 
-# 🚀 Overview
+# 🌍 Overview
 
-Wander AI is a production-ready AI Travel Planner that combines multiple AI agents and external APIs to create personalized travel plans.
+Wander AI is an intelligent **Multi-Agent AI Travel Planner** that combines **LangGraph**, **OpenAI**, and multiple external APIs to generate complete travel plans.
 
-Instead of simply answering questions, the application:
+Instead of simply answering questions, the AI:
 
-- Searches live flight information
-- Retrieves real-time weather
-- Searches the web for attractions
-- Generates day-by-day itineraries
-- Estimates trip budgets
-- Recommends hotels and destinations
-- Uses AI to personalize recommendations
+- ✈️ Searches live flights
+- 🌦 Retrieves live weather
+- 🌍 Searches the web for attractions
+- 🏨 Recommends hotels
+- 💰 Estimates travel budgets
+- 📅 Creates day-by-day itineraries
+- 🧠 Personalizes recommendations using AI
 
 ---
 
 # ✨ Features
 
-### 🤖 AI Planning
+## 🤖 AI Planning
 
-- Multi-Agent Architecture using LangGraph
+- Multi-Agent Workflow using LangGraph
 - OpenAI GPT-powered reasoning
 - Intelligent itinerary generation
-- Budget planning
-- Personalized travel suggestions
+- Personalized recommendations
+- Budget estimation
+- Destination suggestions
 
 ---
 
-### 🌍 Live Travel Information
+## 🌎 Live Travel Information
 
-- ✈️ Live Flight Search
-- 🌦 Real-time Weather
-- 🔎 Web Search using Tavily
+- ✈️ Flight Search (AviationStack API)
+- 🌦 Live Weather (OpenWeather API)
+- 🔎 Web Search (Tavily Search)
 - 🏨 Hotel Recommendations
 - 📍 Tourist Attractions
 
 ---
 
-### 💬 Chat Experience
+## 💬 AI Chat Experience
 
-- Streaming AI responses
-- Markdown support
+- ChatGPT-style UI
+- Real-time streaming responses
+- Markdown rendering
 - Copy responses
-- Download itinerary as PDF
-- Beautiful modern UI
+- PDF itinerary export
 - Responsive design
+- Mobile friendly
 
 ---
 
-### 👤 User Features
+## 👤 User Features
 
 - Authentication
 - User Profiles
 - Travel Preferences
 - Favorite Destinations
-- Conversation Memory
+- Persistent Chat Memory
 
 ---
 
-# 🛠 Tech Stack
+# 🏗 Architecture
+
+```text
+                User
+                  │
+                  ▼
+        React Frontend (Vercel)
+                  │
+                  ▼
+          FastAPI Backend
+                  │
+      ┌───────────┼────────────┐
+      │           │            │
+      ▼           ▼            ▼
+ LangGraph     MongoDB      LangSmith
+      │
+      ├───────────────────────────────┐
+      ▼               ▼               ▼
+ OpenAI GPT      Tavily Search   OpenWeather
+      │
+      ▼
+ AviationStack
+```
+
+---
+
+# ⚡ Tech Stack
 
 ## Frontend
 
@@ -93,6 +125,10 @@ Instead of simply answering questions, the application:
 
 - MongoDB Atlas
 
+## AI Observability
+
+- LangSmith
+
 ## APIs
 
 - OpenAI API
@@ -102,41 +138,15 @@ Instead of simply answering questions, the application:
 
 ## Deployment
 
+- Docker
 - Render
 - Vercel
-- Docker
-
----
-
-# 🏗 Architecture
-
-```
-                User
-                  │
-                  ▼
-        React Frontend (Vercel)
-                  │
-                  ▼
-          FastAPI Backend
-                  │
-      ┌───────────┼───────────┐
-      │           │           │
-      ▼           ▼           ▼
- LangGraph    MongoDB      OpenAI
-      │
-      ├──────────────┐
-      ▼              ▼
- Weather API     Tavily Search
-      │
-      ▼
- AviationStack
-```
 
 ---
 
 # 📂 Project Structure
 
-```
+```text
 travel_agent_langchain
 │
 ├── backend
@@ -151,12 +161,44 @@ travel_agent_langchain
 │   ├── index.html
 │   └── ...
 │
+├── assets
+│   ├── home.png
+│   ├── chat.png
+│   ├── itinerary.png
+│   └── demo.gif
+│
 └── README.md
 ```
 
 ---
 
-# ⚙️ Installation
+# 📸 Demo
+
+## Home Page
+
+> Add Screenshot
+
+---
+
+## Chat Interface
+
+> Add Screenshot
+
+---
+
+## Generated Itinerary
+
+> Add Screenshot
+
+---
+
+## Demo GIF
+
+> Add demo.gif here
+
+---
+
+# 🚀 Installation
 
 ## Clone Repository
 
@@ -174,14 +216,18 @@ cd travel_agent_langchain
 cd backend
 
 python -m venv venv
-
-source venv/bin/activate
 ```
 
 Windows
 
 ```bash
 venv\Scripts\activate
+```
+
+Linux / Mac
+
+```bash
+source venv/bin/activate
 ```
 
 Install dependencies
@@ -212,9 +258,7 @@ npm run dev
 
 # 🔑 Environment Variables
 
-Backend
-
-```
+```env
 OPENAI_API_KEY=
 
 TAVILY_API_KEY=
@@ -250,33 +294,30 @@ Database
 
 ---
 
-# 📸 Demo
+# 📈 LangSmith Observability
 
-### Landing Page
+LangSmith is used for:
 
-(Add Screenshot)
-
-### Chat Interface
-
-(Add Screenshot)
-
-### Generated Itinerary
-
-(Add Screenshot)
+- Agent execution tracing
+- Workflow visualization
+- LLM debugging
+- Tool execution monitoring
+- Prompt inspection
+- Performance analysis
+- Error tracking
 
 ---
 
 # 🚀 Future Improvements
 
-- Voice Assistant
 - Google Maps Integration
 - Hotel Booking APIs
 - Flight Booking APIs
+- Voice Assistant
 - Multi-language Support
-- Image Generation
-- AI Expense Tracker
+- Expense Tracking
 - Offline Travel Guide
-- Mobile App
+- Mobile Application
 - Push Notifications
 
 ---
@@ -284,31 +325,29 @@ Database
 # 📚 What I Learned
 
 - LangGraph Multi-Agent Systems
-- FastAPI Production Deployment
-- Docker
+- FastAPI Development
+- LangSmith Observability
+- Docker Deployment
 - MongoDB Atlas
-- OpenAI Streaming
 - REST APIs
-- Authentication
-- Full Stack Development
+- OpenAI Streaming
+- AI Workflow Design
 - Cloud Deployment
-- Responsive UI Design
+- Responsive Frontend Development
 
 ---
 
 # 🤝 Contributing
 
-Pull requests are welcome.
+Contributions are welcome!
 
-For major changes, please open an issue first to discuss your ideas.
+Feel free to fork this repository and submit a pull request.
 
 ---
 
 # ⭐ Support
 
-If you found this project useful,
-
-please ⭐ the repository.
+If you found this project useful, consider giving it a ⭐ on GitHub.
 
 ---
 
@@ -316,13 +355,9 @@ please ⭐ the repository.
 
 **Anish Kumar**
 
-GitHub
+GitHub: https://github.com/Anishkr007
 
-https://github.com/Anishkr007
-
-LinkedIn
-
-(Add LinkedIn Profile)
+LinkedIn: https://www.linkedin.com/in/anish-kumar-17827628b/
 
 ---
 
