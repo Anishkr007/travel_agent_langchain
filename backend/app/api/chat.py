@@ -57,6 +57,7 @@ async def chat_endpoint(
                 
                 # 3. Stream graph execution
                 collected_flights = []
+                flight_route = ""
                 async for event in graph.astream_events(input_state, config, version="v1"):
                     if event["event"] == "on_chat_model_stream":
                         chunk = event["data"]["chunk"]
@@ -70,14 +71,21 @@ async def chat_endpoint(
                         output = event["data"].get("output")
                         if not output:
                             continue
-                        # Parse output whether it's already a dict or a JSON string
+                        # Handle ToolMessage objects, strings, and dicts
                         try:
-                            parsed = json.loads(output) if isinstance(output, str) else output
+                            if hasattr(output, 'content'):
+                                raw = output.content
+                            elif isinstance(output, str):
+                                raw = output
+                            else:
+                                raw = output
+                            parsed = json.loads(raw) if isinstance(raw, str) else raw
                         except Exception:
                             parsed = {}
 
                         if tool_name == "search_flights" or "flight" in tool_name.lower():
                             raw_flights = parsed.get("flights", [])
+                            flight_route = parsed.get("route", "")
                             def fmt_time(ts):
                                 if not ts: return "--"
                                 from datetime import datetime, timezone
@@ -112,7 +120,7 @@ async def chat_endpoint(
                 # Emit done with collected flights embedded
                 yield {
                     "event": "message",
-                    "data": json.dumps({"type": "done", "flights": collected_flights})
+                    "data": json.dumps({"type": "done", "flights": collected_flights, "flight_route": flight_route})
                 }
                 
         except Exception as e:

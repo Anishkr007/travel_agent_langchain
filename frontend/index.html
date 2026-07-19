@@ -120,43 +120,75 @@
   /* Flight Cards */
   #flightList { margin-bottom: 24px; }
   #flightList:empty { display: none; }
-  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .flight-section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 700;
+    color: var(--text); margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .flight-section-title svg { width: 16px; height: 16px; color: var(--accent-1); }
+
   .info-note {
     display: flex; gap: 9px; align-items: flex-start;
-    background: rgba(240, 168, 64, 0.08); border: 1px solid rgba(240, 168, 64, 0.2); color: rgba(240, 201, 138, 0.85);
+    background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.18);
+    color: rgba(147, 197, 253, 0.85);
     padding: 10px 14px; border-radius: 10px; font-size: 12px; line-height: 1.55; margin-bottom: 14px;
   }
-  .info-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+  .info-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; color: rgba(147, 197, 253, 0.7); }
+
   .flight-card {
-    background: #1a1a2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
-    padding: 16px 20px; margin-bottom: 10px; transition: border-color .2s, box-shadow .2s;
+    background: var(--surface, #0e1728); border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 10px;
+    transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
   }
-  .flight-card:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  .flight-card:hover {
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.10), 0 0 0 1px rgba(59, 130, 246, 0.08);
+    transform: translateY(-1px);
+  }
+
   .flight-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .airline-info { display: flex; align-items: baseline; gap: 8px; }
-  .airline-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: #e8e8f0; }
-  .flight-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(180,180,200,0.55); }
+  .airline-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px; color: #eef2f9; }
+  .flight-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: rgba(147, 161, 184, 0.55); }
+
   .status-badge {
     font-size: 10px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
     padding: 3px 10px; border-radius: 100px; border: 1px solid;
   }
-  .status-scheduled { background: rgba(52, 211, 153, 0.1); color: #34d399; border-color: rgba(52,211,153,0.3); }
-  .status-delayed    { background: rgba(251,191, 36, 0.1); color: #fbbf24; border-color: rgba(251,191,36,0.3); }
-  .status-cancelled  { background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239,68,68,0.3); }
-  .status-landed     { background: rgba(148,163,184, 0.1); color: #94a3b8; border-color: rgba(148,163,184,0.3); }
+  .status-scheduled { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.35); }
+  .status-active    { background: rgba(52, 211, 153, 0.12); color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
+  .status-delayed   { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
+  .status-cancelled { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
+  .status-landed    { background: rgba(148, 163, 184, 0.12); color: #94a3b8; border-color: rgba(148, 163, 184, 0.3); }
+
   .route-row { display: flex; align-items: flex-start; gap: 0; }
   .route-point { flex: 0 0 auto; min-width: 56px; }
   .route-point.dest { text-align: right; }
-  .route-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 22px; color: #e8e8f0; line-height: 1; }
-  .route-time { font-size: 11px; color: rgba(180,180,200,0.6); margin-top: 5px; }
+  .route-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 22px; color: #eef2f9; line-height: 1; }
+  .route-time { font-size: 11px; color: rgba(147, 161, 184, 0.6); margin-top: 5px; }
+
   .route-mid {
-    flex: 1; display: flex; flex-direction: column; align-items: center; padding: 0 12px; padding-top: 2px;
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 0 12px; padding-top: 2px;
   }
-  .route-plane { font-size: 16px; margin-bottom: 4px; }
+  .route-plane { color: rgba(59, 130, 246, 0.7); font-size: 14px; margin-bottom: 4px; }
   .route-dashes {
     width: 100%; height: 1px;
-    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0, rgba(255,255,255,0.15) 6px, transparent 6px, transparent 12px);
+    background: repeating-linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0, rgba(59, 130, 246, 0.3) 6px, transparent 6px, transparent 12px);
   }
+
+  @keyframes flightCardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .flight-card { animation: flightCardIn 0.35s ease both; }
+  .flight-card:nth-child(2) { animation-delay: 0.05s; }
+  .flight-card:nth-child(3) { animation-delay: 0.10s; }
+  .flight-card:nth-child(4) { animation-delay: 0.15s; }
+  .flight-card:nth-child(5) { animation-delay: 0.20s; }
+  .flight-card:nth-child(6) { animation-delay: 0.25s; }
   </style>
 </head>
 <body>
@@ -322,6 +354,7 @@
         let fullAnswer = "";
         let buffer = "";
         let pendingFlights = [];
+        let flightRoute = '';
 
         const FLIGHT_TOOLS = new Set(['search_flights', 'flight-tool', 'flights', 'search_flight']);
 
@@ -367,6 +400,7 @@
                 // Flights are embedded in the done event by the backend
                 if (evt.flights && evt.flights.length > 0) {
                   pendingFlights = evt.flights;
+                  flightRoute = evt.flight_route || flightRoute;
                   console.log("Flights from done event:", pendingFlights);
                 }
               } else if (evt.type === 'tool_data' && FLIGHT_TOOLS.has(evt.tool)) {
@@ -385,7 +419,7 @@
 
         if (pendingFlights.length > 0) {
           console.log("Rendering", pendingFlights.length, "flight cards");
-          renderFlights(pendingFlights);
+          renderFlights(pendingFlights, flightRoute);
         } else {
           console.warn("No flight data captured from SSE stream.");
         }
@@ -441,21 +475,28 @@
 
   const statusClass = {
     scheduled: "status-scheduled",
+    active: "status-active",
     delayed: "status-delayed",
     cancelled: "status-cancelled",
-    landed: "status-landed",
-    active: "status-scheduled"
+    landed: "status-landed"
   };
 
-  function renderFlights(list) {
+  function renderFlights(list, routeTitle) {
     const container = document.getElementById('flightList');
     if (!list || !list.length) {
       if (container) container.innerHTML = '';
       return;
     }
     
+    const title = routeTitle || 'Flight Results';
+    
     let html = `
-      <div class="section-title">Flight Results</div>
+      <div class="flight-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+        </svg>
+        ${escapeHtml(title)}
+      </div>
       <div class="info-note">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
         AviationStack provides live flight status and schedules. It does not provide ticket fares or prices — check an airline or booking site for pricing.
@@ -469,7 +510,7 @@
             <span class="airline-name">${escapeHtml(f.airline)}</span>
             <span class="flight-num">${escapeHtml(f.flightNumber)}</span>
           </div>
-          <span class="status-badge ${statusClass[f.status?.toLowerCase()] || 'status-scheduled'}">${escapeHtml(f.status || 'scheduled')}</span>
+          <span class="status-badge ${statusClass[f.status?.toLowerCase()] || 'status-scheduled'}">${escapeHtml((f.status || 'scheduled').toUpperCase())}</span>
         </div>
         <div class="route-row">
           <div class="route-point origin">
