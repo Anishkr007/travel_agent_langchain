@@ -19,19 +19,23 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AI Travel Planner API", lifespan=lifespan)
 
+origins = [
+    "https://travel-agent-langchain.vercel.app",
+    "https://travel-agent-langchain-olive.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "null",
+]
+if settings.ALLOWED_ORIGINS:
+    origins.extend([o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://travel-agent-langchain.vercel.app",
-        "https://travel-agent-langchain-olive.vercel.app",
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-        "null",
-    ],
+    allow_origins=list(set(origins)),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
