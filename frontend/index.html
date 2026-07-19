@@ -131,11 +131,11 @@
 
   .info-note {
     display: flex; gap: 9px; align-items: flex-start;
-    background: rgba(59, 130, 246, 0.06); border: 1px solid rgba(59, 130, 246, 0.18);
-    color: rgba(147, 197, 253, 0.85);
+    background: color-mix(in srgb, var(--accent-1) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent-1) 25%, transparent);
+    color: var(--accent-1);
     padding: 10px 14px; border-radius: 10px; font-size: 12px; line-height: 1.55; margin-bottom: 14px;
   }
-  .info-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; color: rgba(147, 197, 253, 0.7); }
+  .info-note svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; color: var(--accent-1); }
 
   .flight-card {
     background: var(--surface, #0e1728); border: 1px solid rgba(148, 163, 184, 0.14);
@@ -143,8 +143,8 @@
     transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
   }
   .flight-card:hover {
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.10), 0 0 0 1px rgba(59, 130, 246, 0.08);
+    border-color: color-mix(in srgb, var(--accent-1) 40%, transparent);
+    box-shadow: 0 4px 24px color-mix(in srgb, var(--accent-1) 15%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent-1) 15%, transparent);
     transform: translateY(-1px);
   }
 
@@ -157,7 +157,7 @@
     font-size: 10px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase;
     padding: 3px 10px; border-radius: 100px; border: 1px solid;
   }
-  .status-scheduled { background: rgba(59, 130, 246, 0.12); color: #60a5fa; border-color: rgba(59, 130, 246, 0.35); }
+  .status-scheduled { background: color-mix(in srgb, var(--accent-1) 15%, transparent); color: var(--accent-1); border-color: color-mix(in srgb, var(--accent-1) 35%, transparent); }
   .status-active    { background: rgba(52, 211, 153, 0.12); color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
   .status-delayed   { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border-color: rgba(251, 191, 36, 0.3); }
   .status-cancelled { background: rgba(239, 68, 68, 0.12); color: #f87171; border-color: rgba(239, 68, 68, 0.3); }
@@ -173,10 +173,10 @@
     flex: 1; display: flex; flex-direction: column; align-items: center;
     padding: 0 12px; padding-top: 2px;
   }
-  .route-plane { color: rgba(59, 130, 246, 0.7); font-size: 14px; margin-bottom: 4px; }
+  .route-plane { color: var(--accent-1); font-size: 14px; margin-bottom: 4px; }
   .route-dashes {
     width: 100%; height: 1px;
-    background: repeating-linear-gradient(90deg, rgba(59, 130, 246, 0.3) 0, rgba(59, 130, 246, 0.3) 6px, transparent 6px, transparent 12px);
+    background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent-1) 35%, transparent) 0, color-mix(in srgb, var(--accent-1) 35%, transparent) 6px, transparent 6px, transparent 12px);
   }
 
   @keyframes flightCardIn {
@@ -189,6 +189,24 @@
   .flight-card:nth-child(4) { animation-delay: 0.15s; }
   .flight-card:nth-child(5) { animation-delay: 0.20s; }
   .flight-card:nth-child(6) { animation-delay: 0.25s; }
+
+  /* Weather Cards */
+  #weatherList { margin-bottom: 24px; }
+  #weatherList:empty { display: none; }
+  .weather-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 24px; margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    animation: flightCardIn 0.35s ease both;
+  }
+  .weather-temp {
+    font-size: 32px; font-weight: 700; font-family: 'Space Grotesk', sans-serif;
+    color: var(--accent-1); display: flex; align-items: center; gap: 8px;
+  }
+  .weather-desc { font-size: 14px; color: var(--text-muted); text-transform: capitalize; margin-top: 4px; }
+  .weather-details { display: flex; gap: 24px; font-size: 12px; color: var(--text-faint); }
+  .weather-detail-item { display: flex; flex-direction: column; gap: 2px; }
+  .weather-detail-val { font-weight: 600; color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -257,6 +275,7 @@
         </div>
         <div id="pdfContent" class="pdf-content">
           <h1 class="pdf-title">AI Travel Plan</h1>
+          <div id="weatherList"></div>
           <div id="flightList"></div>
           <div id="resultBox" class="result-box"></div>
         </div>
@@ -328,6 +347,8 @@
       try{
         const flightList = document.getElementById('flightList');
         if (flightList) flightList.innerHTML = '';
+        const weatherList = document.getElementById('weatherList');
+        if (weatherList) weatherList.innerHTML = '';
 
         const url = 'https://travel-agent-langchain.onrender.com/api/chat/chat';
         const body = JSON.stringify({ thread_id: threadId, user_id: "guest", message: userPrompt });
@@ -354,6 +375,7 @@
         let fullAnswer = "";
         let buffer = "";
         let pendingFlights = [];
+        let pendingWeather = null;
         let flightRoute = '';
 
         const FLIGHT_TOOLS = new Set(['search_flights', 'flight-tool', 'flights', 'search_flight']);
@@ -410,11 +432,19 @@
                   pendingFlights = pendingFlights.concat(rawFlights.map(mapFlight));
                   console.log("Flights from tool_data event:", pendingFlights);
                 }
+              } else if (evt.type === 'tool_data' && evt.tool === 'get_weather') {
+                pendingWeather = evt.data;
+                console.log("Weather from tool_data event:", pendingWeather);
               } else if (evt.type === 'error') {
                 throw new Error(evt.error);
               }
             } catch(e) { /* ignore parse errors */ }
           }
+        }
+
+        if (pendingWeather) {
+          console.log("Rendering weather card");
+          renderWeather(pendingWeather);
         }
 
         if (pendingFlights.length > 0) {
@@ -472,6 +502,50 @@
     document.addEventListener('keydown', (e) => {
       if(e.ctrlKey && e.key === 'Enter') sendMessage();
     });
+
+  function renderWeather(data) {
+    const container = document.getElementById('weatherList');
+    if (!data) return;
+    
+    if (data.error) {
+      container.innerHTML = `<div class="info-note" style="color:var(--accent-1); border-color:color-mix(in srgb, var(--accent-1) 30%, transparent); background:color-mix(in srgb, var(--accent-1) 10%, transparent);">Weather unavailable: ${escapeHtml(data.error)}</div>`;
+      return;
+    }
+
+    const iconUrl = `https://openweathermap.org/img/wn/${data.icon}@2x.png`;
+    
+    container.innerHTML = `
+      <div class="flight-section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+        Current Weather in ${escapeHtml(data.location)}
+      </div>
+      <div class="weather-card">
+        <div>
+          <div class="weather-temp">
+            ${Math.round(data.temp)}°C
+            <img src="${iconUrl}" alt="${data.description}" style="width:50px;height:50px;margin-left:-4px;">
+          </div>
+          <div class="weather-desc">${escapeHtml(data.description)}</div>
+        </div>
+        <div class="weather-details">
+          <div class="weather-detail-item">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em">Feels Like</span>
+            <span class="weather-detail-val">${Math.round(data.feels_like)}°C</span>
+          </div>
+          <div class="weather-detail-item">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em">Humidity</span>
+            <span class="weather-detail-val">${data.humidity}%</span>
+          </div>
+          <div class="weather-detail-item">
+            <span style="font-size:10px; text-transform:uppercase; letter-spacing:0.05em">Wind</span>
+            <span class="weather-detail-val">${data.wind_speed} m/s</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
   const statusClass = {
     scheduled: "status-scheduled",
