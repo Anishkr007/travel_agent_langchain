@@ -350,7 +350,7 @@
         const weatherList = document.getElementById('weatherList');
         if (weatherList) weatherList.innerHTML = '';
 
-        const url = 'https://travel-agent-langchain.onrender.com/api/chat/chat';
+        const url = 'https://travel-agent-langchain.onrender.com/api/chat';
         const body = JSON.stringify({ thread_id: threadId, user_id: "guest", message: userPrompt });
 
         console.log("=== API REQUEST ===", url);

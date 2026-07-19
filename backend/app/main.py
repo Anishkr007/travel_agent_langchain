@@ -23,15 +23,21 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://travel-agent-langchain.vercel.app",
+        "https://travel-agent-langchain-olive.vercel.app",
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+        "null",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
+app.include_router(chat.router, prefix="/api", tags=["chat"])
 app.include_router(profile.router, prefix="/api/profile", tags=["profile"])
 
 @app.get("/api/health")

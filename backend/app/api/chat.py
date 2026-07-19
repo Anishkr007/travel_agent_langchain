@@ -131,7 +131,7 @@ async def chat_endpoint(
             
     return EventSourceResponse(event_generator())
 
-@router.post("/travel")
+@router.post("/chat/travel")
 async def travel_endpoint(
     request: ChatRequest, 
     req: Request, 
